@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>逆时针走矩阵</title>
+    <script src="./vue.js"></script>
+    <style>
+        #container {
+            width: 30%;
+            margin: 0 auto;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <label for="conten">向二维数组添加内容</label>
+        <input type="text" name="content" id="" v-model="num">
+        <button @click="addNum" v-show="flag">添加</button>
+        <button @click="addNext" v-show="!flag">添加下一行</button>
+        <span style="color:red" v-if="err">{{worning}}</span>
+        <br />
+        <!-- {{num}} -->
+        <br />
+        <!-- {{nums}} -->
+        <!-- 遍历nums数组，展现矩阵 -->
+        <hr />
+        <div>输入的矩阵为：
+            <table>
+                <tr v-for='(item, index) in nums'>
+                    <template v-for='items in item'>
+                        <template v-for='(itemss, indexs) in items'>
+                            <td>{{itemss}}</td>
+                        </template>
+                    </template>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div>您目前共添加了{{row}}行，{{col}}列</div>
+        <br />
+        <button @click="sorftNums">从中间按逆时针顺序输出</button>
+        {{result}}
+    </div>
+
+    <script>
+        var vm = new Vue({
+            el: '#container',
+            data: {
+                nums: [], //存放矩阵
+                num: [], //存放每次加入的行数据
+                row: 0,
+                col: 0,
+                flag: true, //判断按钮显示
+                worning: "添加列数与第一次不同，请重新输入",
+                err: false,
+                result: [], //存放输出结果
+            },
+            methods: {
+                // 第一次加数据
+                addNum() {
+                    this.nums.push(this.num);
+                    this.col = this.num.length;
+                    this.num = [];
+                    this.row++;
+                    this.flag = !this.flag;
+                },
+                addNext() {
+                    if (this.num.length === this.col) {
+                        this.nums.push(this.num);
+                        this.num = [];
+                        this.row++;
+                    } else {
+                        this.err = true;
+                        this.num = [];
+                    }
+                },
+                // 排序
+                sorftNums() {
+                    // 找到中心位置数据
+                    let first;
+                    let indexi = Math.floor(this.row / 2);
+                    let indexj = Math.floor(this.col / 2);
+                    first = this.nums[indexi][indexj];
+                    // console.log(first);
+                    // console.log(Math.floor(this.row/2),Math.floor(this.col/2));
+                    // 判断当前步数是否走完
+                    let n;
+                    // 每走两个方向，单向步数加一 
+                    let count = 1;
+                    let len = this.row * this.col;
+                    this.result.push(parseInt(first));
+
+                    while (this.result.length < len) {
+                        //向左走
+                        n = count;
+                        while (n > 0) {
+                            indexj = indexj - 1;
+                            if (indexj >= 0 && indexi >= 0) {
+                                this.result.push(parseInt(this.nums[indexi][indexj]));
+                            }
+                            n--;
+                        }
+
+                        //避免加入重复数据
+                        if (this.result.length >= len) break;
+
+                        //向下走
+                        n = count;
+                        while (n > 0) {
+                            indexi = indexi + 1;
+                            if (indexi < this.row && indexj >= 0) {
+                                this.result.push(parseInt(this.nums[indexi][indexj]));
+                            }
+                            n--;
+                        }
+
+
+                        if (this.result.length >= len) break;
+
+                        // 每走两个方向，走的步数加一
+                        count += 1;
+
+                        //向右走
+                        n = count;
+                        while (n > 0) {
+                            indexj = indexj + 1;
+                            if (indexj < this.col && indexi < this.row) {
+                                this.result.push(parseInt(this.nums[indexi][indexj]));
+                            }
+                            n--;
+                        }
+
+                        if (this.result.length >= len) break;
+
+                        //向上走
+                        n = count;
+                        while (n > 0) {
+                            indexi = indexi - 1;
+                            if (indexi >= 0 && indexj < this.col) {
+                                this.result.push(parseInt(this.nums[indexi][indexj]));
+                            }
+                            n--;
+                        }
+
+                        // 每走两个方向，走的步数加一
+                        count += 1;
+                    }
+
+                }
+
+            }
+        });
+    </script>
+</body>
+
+</html>
